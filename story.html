@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OVYA STUDIO — Story 1080×1920</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;background:#080706;color:#f4ede4;font-family:Inter,system-ui,sans-serif}
+  #stage{position:relative;display:flex;justify-content:center;align-items:flex-start;padding:0;overflow:hidden}
+  #c{display:block;width:1080px;height:1920px;transform-origin:top center}
+  #ui{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:5;display:flex;gap:10px}
+  #dl{
+    font:600 14px Inter,system-ui,sans-serif;letter-spacing:.02em;cursor:pointer;
+    padding:12px 22px;border-radius:999px;border:0;color:#231708;
+    background:linear-gradient(180deg,#ffc45e,#f5a524);box-shadow:0 14px 34px -12px rgba(245,165,36,.8);
+  }
+  #dl:hover{filter:brightness(1.05)}
+  body.raw{background:#080706}
+  body.raw #ui{display:none}
+  body.raw #stage{padding:0}
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="c" width="1080" height="1920"></canvas></div>
+<div id="ui"><button id="dl">Download PNG · 1080×1920</button></div>
+<script>
+const POOL = ["_fathimahst", "_lekyz__", "_maewang_", "_miiinuka", "_nixni_hejimoon121", "_rinmiiya_", "_shinriina", "aelysunshine", "aesapapillon_", "andrevault", "asta_izuko", "athrozax", "atikadf", "atty.alexx", "bbliyk", "berrywoni", "billiecollects", "brianbeastly", "by_juanpabloo", "c6ded", "cadlerbenjamin_", "caleb_lky", "carlota.vqz", "cherrywinto", "chiiavou", "claaalllssson", "coline21_06", "davidianmartine", "eli.abrst", "huynhntq", "imnotwinter_luv", "insomnlasjourney", "its_unicornia_2.0", "jade.basketball", "jaychaeah", "jenzinee", "jerich0joestar", "k.sncv1", "kendygyu", "lakibluu", "laly68260", "lauraenfolte", "laurq_79", "leyyandeesu", "lhusssye", "lilycouture34", "lisa.liseaa", "llsaa.liseaa.pv", "lunablanca34", "m.b.g_3159", "mams_balde", "margot.shiny", "marikonailss", "marti.negrelli", "maviepour_laleurs", "max.i.monstre", "maximlien.wu", "mieting_881027", "mini_verse1024", "minjaeong_", "minzibooranghae", "miy.xc", "miyeonzzip", "moonhnnie", "morxglls_", "myrt0.bax3van1", "naeg_1130", "ni_kol_koru", "ottojr30", "pinini4drift", "pokoius", "queenkarinae", "radityafarhan61", "ralph1_trades", "rikisannieyouth", "ryrydx", "sentimentalwrld", "stayinthemiddlelikeuall", "sweetyminjoo", "synkchaes", "telltoaren", "the1wrls", "thereal.strange", "torneido_in_malaga", "tsukkiksce", "viilivi17", "wearethe_aespa", "wozalexx", "x.ajsmin", "yizhuotrades", "yjhg_1118"];
+
+const Q = new URLSearchParams(location.search);
+const RAW = Q.get("raw") === "1";
+const W = {
+  1: Q.get("w1") || "",
+  2: Q.get("w2") || "",
+  3: Q.get("w3") || ""
+};
+const PRIZES = [
+  { n: "01", label: "Custom figurine",        sub: "designed with you · up to €300" },
+  { n: "02", label: "Press-on nail set",      sub: "your choice of theme" },
+  { n: "03", label: "Shop gift card",         sub: "€20 · redeemable in the shop" }
+];
+
+const cv = document.getElementById("c");
+const ctx = cv.getContext("2d");
+const CW = 1080, CH = 1920;
+const CREAM = "#f4ede4", GOLD = "#f5a524", GOLD_SOFT = "#ffc45e", EMBER = "#e2571f", MUTED = "#8c8279";
+
+function tracked(text, x, y, spacing, align = "center", font = "", color = CREAM){
+  ctx.save();
+  if(font) ctx.font = font;
+  ctx.fillStyle = color;
+  ctx.textBaseline = "middle";
+  const chars = [...text];
+  const widths = chars.map(ch => ctx.measureText(ch).width);
+  const total = widths.reduce((a,b)=>a+b,0) + spacing * (chars.length - 1);
+  let cx = align === "center" ? x - total/2 : align === "right" ? x - total : x;
+  chars.forEach((ch,i) => { ctx.textAlign = "left"; ctx.fillText(ch, cx, y); cx += widths[i] + spacing; });
+  ctx.restore();
+  return total;
+}
+
+function background(){
+  ctx.fillStyle = "#0a0908";
+  ctx.fillRect(0,0,CW,CH);
+
+  let g = ctx.createRadialGradient(CW*0.16, -CH*0.04, 0, CW*0.16, -CH*0.04, CH*0.92);
+  g.addColorStop(0, "rgba(58,40,25,.95)");
+  g.addColorStop(.45, "rgba(30,21,15,.5)");
+  g.addColorStop(1, "rgba(10,9,8,0)");
+  ctx.fillStyle = g; ctx.fillRect(0,0,CW,CH);
+
+  g = ctx.createRadialGradient(CW*1.05, CH*1.02, 0, CW*1.05, CH*1.02, CH*0.75);
+  g.addColorStop(0, "rgba(80,34,14,.7)");
+  g.addColorStop(1, "rgba(10,9,8,0)");
+  ctx.fillStyle = g; ctx.fillRect(0,0,CW,CH);
+
+  // vignette
+  g = ctx.createRadialGradient(CW/2, CH*0.45, CH*0.2, CW/2, CH*0.45, CH*0.78);
+  g.addColorStop(0, "rgba(0,0,0,0)");
+  g.addColorStop(1, "rgba(0,0,0,.6)");
+  ctx.fillStyle = g; ctx.fillRect(0,0,CW,CH);
+
+  // grain
+  ctx.save();
+  for(let i=0;i<5200;i++){
+    const x = Math.random()*CW, y = Math.random()*CH;
+    ctx.fillStyle = `rgba(255,245,230,${Math.random()*0.035})`;
+    ctx.fillRect(x, y, 1.4, 1.4);
+  }
+  ctx.restore();
+}
+
+function wheel(cx, cy, R){
+  const n = POOL.length;
+  const seg = Math.PI * 2 / n;
+  const winners = [W[1], W[2], W[3]].filter(Boolean);
+
+  ctx.save();
+  ctx.translate(cx, cy);
+
+  // outer glow
+  /* halo behind the wheel */
+  const halo = ctx.createRadialGradient(0,0,R*0.2,0,0,R*1.25);
+  halo.addColorStop(0,"rgba(245,165,36,.20)");
+  halo.addColorStop(.6,"rgba(226,87,31,.08)");
+  halo.addColorStop(1,"rgba(0,0,0,0)");
+  ctx.fillStyle = halo;
+  ctx.beginPath(); ctx.arc(0,0,R*1.25,0,Math.PI*2); ctx.fill();
+
+  for(let i=0;i<n;i++){
+    const a0 = i*seg, a1 = a0 + seg;
+    const isWin = winners.includes(POOL[i]);
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.arc(0,0,R-2,a0,a1);
+    ctx.closePath();
+    if(isWin){
+      const g = ctx.createRadialGradient(0,0,R*0.08,0,0,R);
+      g.addColorStop(0,"rgba(255,196,94,.62)");
+      g.addColorStop(1,"rgba(245,165,36,.30)");
+      ctx.fillStyle = g;
+    } else {
+      ctx.fillStyle = i % 2 ? "#241b16" : "#120f0d";
+    }
+    ctx.fill();
+    ctx.strokeStyle = "rgba(245,165,36,.10)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // names
+  const fs = Math.max(9, Math.min(13, (R*1.32)/Math.max(16, n*0.29)));
+  ctx.font = `600 ${fs}px Inter, system-ui, sans-serif`;
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+  ctx.shadowColor = "rgba(0,0,0,.6)";
+  ctx.shadowBlur = 3;
+  for(let i=0;i<n;i++){
+    const mid = i*seg + seg/2;
+    ctx.save();
+    ctx.rotate(mid);
+    const maxW = R * 0.64;
+    const isWin = winners.includes(POOL[i]);
+    let label = POOL[i];
+    if(ctx.measureText(label).width > maxW){
+      while(label.length > 3 && ctx.measureText(label + "…").width > maxW) label = label.slice(0,-1);
+      label += "…";
+    }
+    ctx.fillStyle = isWin ? "#fffaf0" : (i % 2 ? "rgba(252,247,240,.9)" : "rgba(250,245,238,.74)");
+    ctx.fillText(label, R - 20, 0, maxW);
+    ctx.restore();
+  }
+  ctx.shadowBlur = 0;
+
+  // rim
+  const rim = ctx.createLinearGradient(-R,-R,R,R);
+  rim.addColorStop(0,"rgba(255,212,137,.75)");
+  rim.addColorStop(.45,"rgba(245,165,36,.25)");
+  rim.addColorStop(1,"rgba(226,87,31,.5)");
+  ctx.beginPath(); ctx.arc(0,0,R-1,0,Math.PI*2);
+  ctx.lineWidth = 3; ctx.strokeStyle = rim; ctx.stroke();
+
+  // bulbs
+  const bulbs = 72;
+  for(let i=0;i<bulbs;i++){
+    const a = i*Math.PI*2/bulbs;
+    ctx.beginPath();
+    ctx.arc(Math.cos(a)*(R-11), Math.sin(a)*(R-11), 2.4, 0, Math.PI*2);
+    ctx.fillStyle = i % 2 ? "rgba(255,232,190,.9)" : "rgba(245,165,36,.5)";
+    ctx.fill();
+  }
+
+  // center disc
+  const d = ctx.createRadialGradient(0,-R*0.03,R*0.02,0,0,R*0.16);
+  d.addColorStop(0,"#2a1f16");
+  d.addColorStop(1,"#0b0908");
+  ctx.beginPath(); ctx.arc(0,0,R*0.155,0,Math.PI*2);
+  ctx.fillStyle = d; ctx.fill();
+  ctx.lineWidth = 2; ctx.strokeStyle = "rgba(245,165,36,.45)"; ctx.stroke();
+
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillStyle = CREAM;
+  ctx.font = `600 ${Math.round(R*0.075)}px "Instrument Serif", Georgia, serif`;
+  ctx.fillText(POOL.length + "", 0, -R*0.012);
+  ctx.fillStyle = "rgba(245,165,36,.9)";
+  ctx.font = `600 ${Math.round(R*0.028)}px Inter, sans-serif`;
+  tracked("ENTRIES", 0, R*0.062, 3, "center", `600 ${Math.round(R*0.028)}px Inter, sans-serif`, "rgba(245,165,36,.85)");
+
+  ctx.restore();
+}
+
+function row(y, i){
+  const p = PRIZES[i];
+  const handle = W[i+1] ? "@" + W[i+1] : "—";
+
+  ctx.save();
+  ctx.textBaseline = "alphabetic";
+
+  // numeral
+  ctx.font = '600 24px Inter, sans-serif';
+  ctx.fillStyle = "rgba(245,165,36,.95)";
+  ctx.textAlign = "left";
+  ctx.fillText(p.n, 96, y);
+
+  // prize label
+  ctx.font = '600 27px Inter, sans-serif';
+  ctx.fillStyle = "rgba(244,237,228,.92)";
+  ctx.fillText(p.label, 168, y);
+
+  // sub label
+  ctx.font = '400 19px Inter, sans-serif';
+  ctx.fillStyle = "rgba(140,130,121,.95)";
+  ctx.fillText(p.sub, 168, y + 30);
+
+  // handle
+  ctx.textAlign = "right";
+  let hs = 40;
+  ctx.font = `400 ${hs}px "Instrument Serif", Georgia, serif`;
+  while(hs > 26 && ctx.measureText(handle).width > 430){ hs -= 2; ctx.font = `400 ${hs}px "Instrument Serif", Georgia, serif`; }
+  ctx.fillStyle = W[i+1] ? "#fff0d8" : "rgba(140,130,121,.6)";
+  ctx.fillText(handle, 984, y + 2);
+
+  // hairline
+  const g = ctx.createLinearGradient(96, 0, 984, 0);
+  g.addColorStop(0, "rgba(255,255,255,.16)");
+  g.addColorStop(1, "rgba(255,255,255,.04)");
+  ctx.fillStyle = g;
+  ctx.fillRect(96, y + 52, 888, 1);
+  ctx.restore();
+}
+
+function render(){
+  ctx.clearRect(0,0,CW,CH);
+  background();
+
+  // brand
+  tracked("OVYA.STUDIO", 516, 300, 7, "right", '600 21px Inter, sans-serif', "rgba(190,180,170,.95)");
+  ctx.save();
+  ctx.font = '400 21px Inter, sans-serif';
+  ctx.fillStyle = "rgba(245,165,36,.9)";
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillText("×", 540, 300);
+  ctx.restore();
+  tracked("LISEA.STUDIO", 564, 300, 7, "left", '600 21px Inter, sans-serif', "rgba(190,180,170,.95)");
+
+  // eyebrow
+  tracked("500 FOLLOWERS GIVEAWAY", 540, 368, 9, "center", '600 20px Inter, sans-serif', GOLD);
+
+  // title
+  ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+  ctx.fillStyle = CREAM;
+  ctx.font = '400 92px "Instrument Serif", Georgia, serif';
+  ctx.fillText("And the winners", 540, 482);
+  ctx.fillStyle = GOLD_SOFT;
+  ctx.font = 'italic 400 92px "Instrument Serif", Georgia, serif';
+  ctx.fillText("are announced", 540, 572);
+
+  // rule
+  const rg = ctx.createLinearGradient(440, 0, 640, 0);
+  rg.addColorStop(0, "rgba(245,165,36,0)");
+  rg.addColorStop(.5, "rgba(245,165,36,.85)");
+  rg.addColorStop(1, "rgba(245,165,36,0)");
+  ctx.fillStyle = rg;
+  ctx.fillRect(440, 612, 200, 2);
+
+  // subtitle
+  ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+  ctx.font = '400 25px Inter, sans-serif';
+  ctx.fillStyle = "rgba(196,186,176,.9)";
+  ctx.fillText("Thank you all for playing 🧡", 540, 668);
+
+  // wheel
+  wheel(540, 1002, 268);
+
+  // winners label
+  tracked("WINNERS", 540, 1322, 8, "center", '600 19px Inter, sans-serif', "rgba(245,165,36,.75)");
+
+  // rows
+  row(1392, 0);
+  row(1472, 1);
+  row(1552, 2);
+
+  // cta
+  tracked("DM TO CLAIM YOUR PRIZE", 540, 1650, 5, "center", '600 22px Inter, sans-serif', GOLD);
+}
+
+function fit(){
+  if(RAW) return;
+  const s = Math.min(window.innerWidth / CW, window.innerHeight / CH);
+  cv.style.width = (CW * s) + "px";
+  cv.style.height = (CH * s) + "px";
+}
+
+document.getElementById("dl").addEventListener("click", () => {
+  cv.toBlob(b => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(b);
+    a.download = "ovya-winners-story.png";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }, "image/png");
+});
+
+function boot(){
+  if(RAW) document.body.classList.add("raw");
+  fit();
+  window.addEventListener("resize", fit);
+  render();
+}
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(boot);
+</script>
+</body>
+</html>
