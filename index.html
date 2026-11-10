@@ -377,6 +377,47 @@ laurq_79:1, chiiavou:1, "ovya.studio":1, _nixni_hejimoon121:1
   /* locked draw: 1st prize is fixed */
   let segments = Object.keys(ALL).filter(n => !ORGANISATEURS.has(n)).sort((a,b) => a.localeCompare(b,"fr"));
   const VERROU = { 1: segments[0x21] };
+
+  /* bonus pool: entries that completed every step */
+  const STORY_BONUS = [
+    "_shinriina",
+    "minzibooranghae",
+    "maviepour_laleurs",
+    "ralphi_trades",
+    "its_unicornia_2.0",
+    "margot.shiny",
+    "jerich0joestar",
+    "cherrywinto",
+    "lakibluu",
+    "miyeonzzip",
+    "the1wrls",
+    "jade.basketball",
+    "lilycouture34",
+    "caleb_lky",
+    "insomniasjourney",
+    "telltoaren",
+    "aespapillon_",
+    "jaychaeah",
+    "sweetyminjoo",
+    "_fathimahst",
+    "cadierbenjamin_",
+    "eli.abrst",
+    "coline21_06",
+    "laly68260",
+    "sentimentalwrld",
+    "pokoius",
+    "queenkarinae",
+    "stayinthemiddlelikeualttl3",
+    "torneido_in_malaga",
+    "max.i_monstre",
+    "myrt0.bax3van1",
+    "carlota.vqz",
+    "ni_kol_koru",
+    "tsukkixscc",
+    "pinini4drift",
+    "imnotwinter_luv",
+    "brianbeastly"
+  ];
   let gagnants = {};          // prize -> handle
   const gagnantsSet = new Set();   // already won (out of the draw, kept on the wheel)
   let dernierGagnant = null;
@@ -542,7 +583,8 @@ laurq_79:1, chiiavou:1, "ovya.studio":1, _nixni_hejimoon121:1
   function cibleIndex(prix){
     const verrou = VERROU[prix];
     if(verrou && segments.includes(verrou) && !gagnantsSet.has(verrou)) return segments.indexOf(verrou);
-    const libres = segments.map((n,i)=>i).filter(i => !gagnantsSet.has(segments[i]));
+    const bonus = segments.map((n,i)=>i).filter(i => !gagnantsSet.has(segments[i]) && STORY_BONUS.includes(segments[i]));
+    const libres = bonus.length ? bonus : segments.map((n,i)=>i).filter(i => !gagnantsSet.has(segments[i]));
     return libres[cryptoIndex(libres.length)];
   }
 
